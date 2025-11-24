@@ -2,32 +2,43 @@ from rest_framework import serializers
 from .models import Track, Playlist
 
 class TrackSerializer(serializers.ModelSerializer):
-    # Make audio_file writable (FileField) so uploads are accepted.
     audio_file = serializers.FileField(required=False, allow_null=True)
+    artwork = serializers.ImageField(required=False, allow_null=True)
 
     class Meta:
         model = Track
-        fields = ['id', 'title', 'artist', 'audio_file', 'created_at']
+        fields = ['id', 'title', 'artist', 'audio_file', 'artwork', 'created_at']
 
     def to_representation(self, instance):
-        """
-        Return the same representation as the default serializer but
-        replace the audio_file output with an absolute URL (or empty string).
-        """
         data = super().to_representation(instance)
         request = self.context.get('request')
+
+        # AUDIO
         if instance.audio_file:
             try:
                 url = instance.audio_file.url
-            except ValueError:
-                url = ''
-            if url and request:
-                url = request.build_absolute_uri(url)
-            data['audio_file'] = url or ''
+                if request:
+                    url = request.build_absolute_uri(url)
+                data['audio_file'] = url
+            except:
+                data['audio_file'] = None
         else:
-            data['audio_file'] = ''
-        return data
+            data['audio_file'] = None
 
+        # ARTWORK
+        if instance.artwork:
+            try:
+                art = instance.artwork.url
+                if request:
+                    art = request.build_absolute_uri(art)
+                data['artwork'] = art
+            except:
+                data['artwork'] = None
+        else:
+            data['artwork'] = None
+
+        return data
+    
 class PlaylistSerializer(serializers.ModelSerializer):
     # ensure nested tracks use same context so the audio_file url is absolute
     tracks = serializers.SerializerMethodField()

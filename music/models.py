@@ -7,6 +7,7 @@ class Track(models.Model):
     title = models.CharField(max_length=255)
     artist = models.CharField(max_length=255, blank=True)
     audio_file = models.FileField(upload_to='tracks/')
+    artwork = models.ImageField(upload_to='artworks/', null=True, blank=True)  # ADD THIS
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
