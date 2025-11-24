@@ -12,3 +12,5 @@ class TrackViewSet(viewsets.ModelViewSet):
 class PlaylistViewSet(viewsets.ModelViewSet):
     queryset = Playlist.objects.all().order_by('-created_at')
     serializer_class = PlaylistSerializer
+    # Also allow multipart/form-data for playlists (image uploads)
+    parser_classes = (MultiPartParser, FormParser, JSONParser)
