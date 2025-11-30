@@ -6,11 +6,9 @@ from .serializers import TrackSerializer, PlaylistSerializer
 class TrackViewSet(viewsets.ModelViewSet):
     queryset = Track.objects.all().order_by('-created_at')
     serializer_class = TrackSerializer
-    # Ensure multipart/form-data is parsed for create/update/patch
     parser_classes = (MultiPartParser, FormParser, JSONParser)
 
 class PlaylistViewSet(viewsets.ModelViewSet):
     queryset = Playlist.objects.all().order_by('-created_at')
     serializer_class = PlaylistSerializer
-    # Also allow multipart/form-data for playlists (image uploads)
     parser_classes = (MultiPartParser, FormParser, JSONParser)

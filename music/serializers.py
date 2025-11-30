@@ -13,7 +13,6 @@ class TrackSerializer(serializers.ModelSerializer):
         data = super().to_representation(instance)
         request = self.context.get('request')
 
-        # AUDIO
         if instance.audio_file:
             try:
                 url = instance.audio_file.url
@@ -25,7 +24,6 @@ class TrackSerializer(serializers.ModelSerializer):
         else:
             data['audio_file'] = None
 
-        # ARTWORK
         if instance.artwork:
             try:
                 art = instance.artwork.url
@@ -40,7 +38,6 @@ class TrackSerializer(serializers.ModelSerializer):
         return data
     
 class PlaylistSerializer(serializers.ModelSerializer):
-    # ensure nested tracks use same context so the audio_file url is absolute
     tracks = serializers.SerializerMethodField()
     track_ids = serializers.PrimaryKeyRelatedField(
         many=True, write_only=True, queryset=Track.objects.all(), source='tracks', required=False
