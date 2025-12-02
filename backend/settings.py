@@ -46,6 +46,10 @@ MIDDLEWARE = [
 
 CORS_ALLOW_ALL_ORIGINS = True
 
+CSRF_TRUSTED_ORIGINS = [
+    "https://musicplayer-backend-c1vt.onrender.com/api"
+]
+
 CORS_EXPOSE_HEADERS = [
     'Accept-Ranges',
     'Content-Range',
