@@ -1,9 +1,21 @@
+from django.conf import settings
+from urllib.parse import urlparse
 from rest_framework import serializers
 from .models import Track, Playlist
 
+
+class FlexibleImageField(serializers.ImageField):
+    
+    def to_internal_value(self, data):
+        
+        if isinstance(data, str):
+            return data
+        return super().to_internal_value(data)
+
+
 class TrackSerializer(serializers.ModelSerializer):
     audio_file = serializers.FileField(required=False, allow_null=True)
-    artwork = serializers.ImageField(required=False, allow_null=True)
+    artwork = FlexibleImageField(required=False, allow_null=True, use_url=True)
 
     class Meta:
         model = Track
@@ -36,7 +48,40 @@ class TrackSerializer(serializers.ModelSerializer):
             data['artwork'] = None
 
         return data
-    
+
+    def update(self, instance, validated_data):
+        artwork_value = validated_data.pop('artwork', serializers.empty)
+
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+
+        if artwork_value is not serializers.empty:
+            if artwork_value is None:
+                instance.artwork = None
+            elif isinstance(artwork_value, str):
+                try:
+                    media_url = settings.MEDIA_URL or '/media/'
+                    if media_url and media_url in artwork_value:
+                        rel = artwork_value.split(media_url, 1)[1]
+                    else:
+                        parsed = urlparse(artwork_value)
+                        path = parsed.path or artwork_value
+                        if '/media/' in path:
+                            rel = path.split('/media/', 1)[1]
+                        else:
+                            rel = path.lstrip('/')
+                    instance.artwork.name = rel
+                except Exception:
+                    
+                    pass
+            else:
+                
+                instance.artwork = artwork_value
+
+        instance.save()
+        return instance
+
+
 class PlaylistSerializer(serializers.ModelSerializer):
     tracks = serializers.SerializerMethodField()
     track_ids = serializers.PrimaryKeyRelatedField(
