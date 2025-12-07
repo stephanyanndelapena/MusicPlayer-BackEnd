@@ -38,7 +38,7 @@ Apply migrations:
 - python manage.py runserver
 
 VI. API Endpoints (Summary)
-<img width="640" height="502" alt="image" src="https://github.com/user-attachments/assets/b4f03eb3-5ad3-4b3c-a433-c0fb528cc612" />
+<br><img width="640" height="502" alt="image" src="https://github.com/user-attachments/assets/b4f03eb3-5ad3-4b3c-a433-c0fb528cc612" />
 
 VII. Deployment Notes
 - The backend must be hosted online (e.g., Render.com) to allow cross‑platform communication with the React Native frontend.
